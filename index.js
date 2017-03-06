@@ -9,14 +9,16 @@ const game_routes = require("./server/game_routes.js");
 
 const port = process.env.PORT || 8080;
 
-app.use("/",web_routes);
-app.use("/api/*",game_routes);
+app.use("/", web_routes);
+// app.use("/api/*", game_routes);
 
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+// app.use(bodyParser.urlencoded({
+//   extended: <true></true>
+// }));
 
-app.listen(port,(err)=>{
-    if(err){ throw err; }
-    console.log("App running on port:"+port);
+app.listen(port, (err) => {
+  if (err) {
+    throw err;
+  }
+  console.log("App running on port:" + port);
 });
