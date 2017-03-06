@@ -22,3 +22,6 @@ app.listen(port, (err) => {
   }
   console.log("App running on port:" + port);
 });
+
+module.exports = app;
+module.exports.port = port;
