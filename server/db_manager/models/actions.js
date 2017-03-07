@@ -16,4 +16,4 @@ const actionSchema = new Schema({
 });
 
 var Action = mongoose.model('Action', actionSchema);
-module.exports.Action = Action;
+module.exports = Action;

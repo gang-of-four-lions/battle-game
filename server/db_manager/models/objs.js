@@ -29,4 +29,4 @@ const objectSchema = new Schema({
 });
 
 var Obj = mongoose.model('Obj', objectSchema);
-module.exports.Obj = Obj;
+module.exports = Obj;

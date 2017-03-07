@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     
-    _id: { },
+    id: { },
     name: { type:String, required:true },
     slackID: { type:String, required:true },
     
@@ -58,4 +58,4 @@ const userSchema = new Schema({
 });
 
 var User = mongoose.model('User', userSchema);
-module.exports.User = User;
+module.exports = User;
