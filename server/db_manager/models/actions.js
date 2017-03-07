@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const actionSchema = new Schema({
     
-    _id: { },
+    id: { type:String },
     name: { type:String, required:true },
     
     data: {

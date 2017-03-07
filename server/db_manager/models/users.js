@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
     
-    id: { },
+    id: { type:String },
     name: { type:String, required:true },
     slackID: { type:String, required:true },
     
