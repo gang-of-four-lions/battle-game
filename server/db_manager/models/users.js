@@ -58,5 +58,4 @@ const userSchema = new Schema({
 });
 
 var User = mongoose.model('User', userSchema);
-
-export default User;
+module.exports.User = User;

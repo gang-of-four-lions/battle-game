@@ -17,7 +17,6 @@ const objectSchema = new Schema({
             metal: { type:Number, default:0 },
             HP:{ type:Number, default:0 },
             MP:{ type:Number, default:0 }
-            
        },
        action: String, //The associated action's id from Action-DB if any
        },
@@ -30,5 +29,4 @@ const objectSchema = new Schema({
 });
 
 var Obj = mongoose.model('Obj', objectSchema);
-
-export default Obj;
+module.exports.Obj = Obj;
