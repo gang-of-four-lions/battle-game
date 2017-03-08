@@ -13,7 +13,7 @@ const userSchema = new Schema({
         MP:  { type:Number, min:0, default:0 },
         EXP:  { type:Number, min:0, default:0 },
         LVL:  { type:Number, min:0, default:0 },
-        Class:String,
+        CLASS: String,
         
         resistants: { 
             water: { type:Number, min:0, default:0 },
@@ -33,19 +33,21 @@ const userSchema = new Schema({
         
         actions: [], //Base actions assigned with charater class
         
-        displayData: {
-            frontImage: String,
-            backImage: String,
-            wins:  { type:Number, min:0, default:0 },
-            gamesPlayed:  { type:Number, min:0, default:0 }
-        },
-        
         inventory: {
             objs: [], //An array of IDs for all objects this player has
             coin: Number // $
         },
         
-        PlayerBuild:{ 
+    },
+    
+    displayData: {
+            frontImage: String,
+            backImage: String,
+            wins:  { type:Number, min:0, default:0 },
+            gamesPlayed:  { type:Number, min:0, default:0 }
+        },
+    
+    PlayerBuild:{ 
             classtype: String,
 	        head: String,
 	        body: String,
@@ -53,7 +55,6 @@ const userSchema = new Schema({
 	        shirt: String,
 	        pants: String
         }
-    }
     
 });
 

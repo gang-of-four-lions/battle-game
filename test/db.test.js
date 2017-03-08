@@ -2,144 +2,59 @@
 
 const expect = require('chai').expect;
 
-const User = require("../server/db_manager/manager.js").User;
-const Action = require("../server/db_manager/manager.js").Action;
-const Obj = require("../server/db_manager/manager.js").Obj;
+const manager = require("../server/db_manager/manager.js");
 
-describe('DB-Manager User collection', function() {
-  it('should add a entry to the DB', () => {
-    var temp = new User({ name:"Tester", slackID:"slackTester" });
-    var num = 0;
-    User.count({},(err,cnt)=>{
-        expect(err).to.equal(null);
-        num=cnt;
-    });
-    
-    temp.save((err)=>{
-        expect(err).to.equal(null);
-    }).then(()=>{
-    
-        User.count({},(err,cnt)=>{
-            expect(err).to.equal(null);
-            expect(cnt).to.equal(num+1);
-        });
-    });
-    
-  });
-  
-  it('should find the entry and modify it',()=>{
-      User.find({ name:"Tester" },(err,doc)=>{
-         expect(err).to.equal(null);
-         expect(doc.name).to.equal("Tester");
-         
-         doc.name = "Tester_mod";
-         
-         doc.save((err)=>{
-             expect(err).to.equal(null);
-         }).then(()=>{
-            User.find({ name:"Tester_mod"},(err,_doc)=>{
-                expect(err).to.equal(null);
-                expect(_doc.name).to.equal("Tester_mod"); 
-            });
-         });
+describe('DB-Manager.createUser()', function() {
+      it('should add a entry to the DB', (done) => {
+          manager.createUser({ name:"Tester", slackID:"tester"}, (err,doc)=>{
+             if(err){ done(err); }
+             else { done(); }
+          });
       });
-  });
-  
-  it('should remove the entry',()=>{
-      User.remove({ name:"Tester_mod"},(err)=>{
-         expect(err).to.equal(null); 
+      
+      it('should error if invaild data is entered', (done) => {
+          manager.createUser({}, (err,doc)=>{
+             if(err){ done(); }
+             else { done("Failed to throw error!"); }
+          });
       });
-  });
 });
 
-describe('DB-Manager Action collection', function() {
-  it('should add a entry to the DB', () => {
-    var temp = new Action({ name:"Tester" });
-    var num = 0;
-    Action.count({},(err,cnt)=>{
-        expect(err).to.equal(null);
-        num=cnt;
-    });
-    
-    temp.save((err)=>{
-        expect(err).to.equal(null);
-    }).then(()=>{
-    
-        Action.count({},(err,cnt)=>{
-            expect(err).to.equal(null);
-            expect(cnt).to.equal(num+1);
-        });
-    });
-    
-  });
-  
-  it('should find the entry and modify it',()=>{
-      Action.find({ name:"Tester" },(err,doc)=>{
-         expect(err).to.equal(null);
-         expect(doc.name).to.equal("Tester");
-         
-         doc.name = "Tester_mod";
-         
-         doc.save((err)=>{
-             expect(err).to.equal(null);
-         }).then(()=>{
-            Action.find({ name:"Tester_mod"},(err,_doc)=>{
-                expect(err).to.equal(null);
-                expect(_doc.name).to.equal("Tester_mod"); 
-            });
-         });
+describe('DB-Manager.getUser()', function() {
+      it('should find an entry on DB', (done) => {
+          manager.getUser("Tester", (err,doc)=>{
+             if(err){ done(err); }
+             else { done(); }
+          });
       });
-  });
-  
-  it('should remove the entry',()=>{
-      Action.remove({ name:"Tester_mod"},(err)=>{
-         expect(err).to.equal(null); 
+      
+      it('should error if invaild data is entered', (done) => {
+          manager.getUser(22, (err,doc)=>{
+             if(err){ done(); }
+             else { done("Failed to throw error!"); }
+          });
       });
-  });
+      
+      it('should error if name is not in DB', (done) => {
+          manager.getUser("a#200hthe", (err,doc)=>{
+             if(err){ done(); }
+             else { done("Failed to throw error!"); }
+          });
+      });
 });
 
-describe('DB-Manager Object collection', function() {
-  it('should add a entry to the DB', () => {
-    var temp = new Obj({ name:"Tester" });
-    var num = 0;
-    Obj.count({},(err,cnt)=>{
-        expect(err).to.equal(null);
-        num=cnt;
-    });
-    
-    temp.save((err)=>{
-        expect(err).to.equal(null);
-    }).then(()=>{
-    
-        Obj.count({},(err,cnt)=>{
-            expect(err).to.equal(null);
-            expect(cnt).to.equal(num+1);
-        });
-    });
-    
-  });
-  
-  it('should find the entry and modify it',()=>{
-      Obj.find({ name:"Tester" },(err,doc)=>{
-         expect(err).to.equal(null);
-         expect(doc.name).to.equal("Tester");
-         
-         doc.name = "Tester_mod";
-         
-         doc.save((err)=>{
-             expect(err).to.equal(null);
-         }).then(()=>{
-            Obj.find({ name:"Tester_mod"},(err,_doc)=>{
-                expect(err).to.equal(null);
-                expect(_doc.name).to.equal("Tester_mod"); 
-            });
-         });
+describe('DB-Manager.removeUser()', function() {
+      it('should remove user from DB', (done) => {
+          manager.removeUser("Tester", (err,doc)=>{
+             if(err){ done(err); }
+             else { done(); }
+          });
       });
-  });
-  
-  it('should remove the entry',()=>{
-      Obj.remove({ name:"Tester_mod"},(err)=>{
-         expect(err).to.equal(null); 
+      
+      it('should error if invaild data is entered', (done) => {
+          manager.removeUser(2253, (err,doc)=>{
+             if(err){ done(); }
+             else { done("Failed to throw error!"); }
+          });
       });
-  });
 });
