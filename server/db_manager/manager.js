@@ -1,7 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGOURI || "mongodb://admin:slackdb$45@ds123050.mlab.com:23050/battle_bot");
+mongoose.connect(process.env.MONGOURI);
 
 var exports = module.exports = {};
 const User = require('./models/users.js');
