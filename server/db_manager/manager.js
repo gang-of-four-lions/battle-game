@@ -108,20 +108,6 @@ exports.getStats = function(slackID,cb){
        return;
     });   
 };
-
-
-exports.updateUser = function(_user,cb){
-   if(!_user || !_user.name || !_user.slackID){ cb("Invaild user.",null); return; }
-        //User.remove({ slackID:_user.slackID },(err)=>{
-        //if(err){ cb("Error updating "+_user.slackID,null); return; }
-        _user.save( (err)=>{
-            if(err){ cb("Error saving user",null); return; }
-            console.log("User saved!");
-            cb(null,"Done");
-            return;
-            });
-        //});
-   }; 
    
 exports.updateUser = function(slackID,obj,cb){
     if(obj===null || typeof(obj)!="object" ){ cb("Invaild object",null); return; }
