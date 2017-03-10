@@ -2,7 +2,7 @@
 
 ## How to play a game
 
-1. Well, the game is not ready. You should **The Gang of Four Lions** us to develop it.
+1. Well, the game is not ready. You should help **The Gang of Four Lions** to develop it.
 
 1. The process of writing and debugging code, comitting changes, creating pull requests and merging branches is actually a pretty good game itself.
 
