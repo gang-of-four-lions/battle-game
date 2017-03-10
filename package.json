@@ -4,10 +4,11 @@
   "description": "Battle-Bot",
   "main": "index.js",
   "scripts": {
-    "build-prod": "webpack -p --config ./client/config/webpack.prod.config.js",
-    "build-dev": "webpack --config ./client/config/webpack.dev.config.js --watch",
+    "build-prod": "webpack -p --config ./client/config/webpack.config.js",
+    "build-dev": "webpack --config ./client/config/webpack.config.js --watch",
     "test": "mocha",
-    "start": "node index.js"
+    "start": "node index.js",
+    "postinstall": "npm run build-prod"
   },
   "repository": {
     "type": "git",
