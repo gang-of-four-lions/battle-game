@@ -7,6 +7,16 @@ var exports = module.exports = {};
     playerImagesObj should contain two objects, 'front' and 'back',
     the filenames of the images as keys of the inner objects, and the values
     should be the layer of the image they should go on, starting at 0.
+    {
+        'front': {
+            'filename.jpg': 0,
+            'failname.jpg': 1
+        },
+        'back': {
+            'filenamz.jpg': 0,
+            'fillname.jpg': 1
+        }
+    }
 */
 exports.generateSprites = function (playerImagesObj, frontFacingSaveFile, backFacingSaveFile) {
     var front = sortImageObject(playerImagesObj['front']);
