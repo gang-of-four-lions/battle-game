@@ -1,13 +1,15 @@
 "use strict";
 
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGOURI );
+mongoose.connect(process.env.MONGOURI);
 
 var exports = module.exports = {};
 const User = require('./models/users.js');
 const Action = require('./models/actions.js');
+const Obj = require('./models/objs.js');
 
-//Helper Functions
+
+//Helper Functions ----------------
 
 const lookUpTable = {
     "id": [ "id" ],
@@ -39,7 +41,8 @@ const lookUpTable = {
     "head": [ "PlayerBuild","head" ],
     "body": [ "PlayerBuild","body" ],
     "shirt": [ "PlayerBuild","shirt" ],
-    "pants": [ "PlayerBuild","pants" ]
+    "pants": [ "PlayerBuild","pants" ],
+    "actions": [ "playerStats","actions"]
 };
 
 function lookUpUser(slackID,cb){
@@ -51,16 +54,27 @@ function lookUpUser(slackID,cb){
     });
 };
 
-function lookUpAction(name,cb){
-    if(typeof(name)!=="string" || name===""){ cb("Invaild name input, name must be a valid string.",null); return; }
-    Action.find({ name:name },(err,doc)=>{
-        if(err || doc.length===0){ cb("Error finding "+name+" - "+err,null); return; }
+function lookUpAction(id,cb){
+    if(typeof(id)!=="string" || id===""){ cb("Invaild ID input, name must be a valid string.",null); return; }
+    Action.find({ id:id },(err,doc)=>{
+        if(err || doc.length===0){ cb("Error finding "+id+" - "+err,null); return; }
        cb(null,doc[0]);
        return;
     });
 };
 
-//User Functions
+function lookUpObject(id,cb){
+    if(typeof(id)!=="string" || id===""){ cb("Invaild ID input, name must be a valid string.",null); return; }
+    Obj.find({ id:id },(err,doc)=>{
+        if(err || doc.length===0){ cb("Error finding "+id+" - "+err,null); return; }
+       cb(null,doc[0]);
+       return;
+    });
+};
+
+//-----------------------------------
+
+//User Functions -------------------
 
 exports.getUser=function(slackID,cb){
     lookUpUser(slackID,cb);
@@ -69,9 +83,9 @@ exports.getUser=function(slackID,cb){
 exports.createUser=function(data,cb){
     if(!data){ cb("Must provide data with name and slackID",null); return; }
     const newUser = new User(data);
-    newUser.save((err,doc)=>{
+    newUser.save((err)=>{
        if(err){  cb("Must provide data with name and slackID",null); return; }
-       cb(null,doc._id);
+       cb(null,"done");
        return;
     });
 };
@@ -108,8 +122,11 @@ exports.getStats = function(slackID,cb){
        return;
     });   
 };
+
+//functions based on lookupTable
+//-----------------------------
    
-exports.updateUser = function(slackID,obj,cb){
+    exports.updateUser = function(slackID,obj,cb){
     if(obj===null || typeof(obj)!="object" ){ cb("Invaild object",null); return; }
     lookUpUser(slackID,(err,doc)=>{
         if(err){ cb(err,null); return; }
@@ -125,5 +142,93 @@ exports.updateUser = function(slackID,obj,cb){
            if(err){ cb("Error saving doc",null); return; }
            cb(null,"Updated");
         });
+    });
+};
+
+    exports.modUser = function(slackID,obj,cb){
+    if(obj===null || typeof(obj)!="object" ){ cb("Invaild object",null); return; }
+    lookUpUser(slackID,(err,doc)=>{
+        if(err){ cb(err,null); return; }
+        for(let prop in obj) { 
+         if(lookUpTable[prop]!==undefined){
+             if(lookUpTable[prop].length===1){ doc[ lookUpTable[prop][0] ]= obj[prop]; }
+             else if(lookUpTable[prop].length===2){ doc[ lookUpTable[prop][0] ][ lookUpTable[prop][1] ]+= obj[prop]; }
+             else if(lookUpTable[prop].length===3){ doc[ lookUpTable[prop][0] ][ lookUpTable[prop][1] ][ lookUpTable[prop][2] ]+= obj[prop]; }
+             else if(lookUpTable[prop].length===4){ doc[ lookUpTable[prop][0] ][ lookUpTable[prop][1] ][ lookUpTable[prop][2] ][ lookUpTable[prop][3] ]+= obj[prop]; }
+         }
+        }
+        doc.save(err=>{
+           if(err){ cb("Error saving doc",null); return; }
+           cb(null,"Updated");
+        });
+    });
+};
+
+    exports.getStatsKey = function(slackID,key,cb){
+    if(key===null || typeof(key)!="string" ){ cb("Invaild key",null); return; }
+    lookUpUser(slackID,(err,doc)=>{
+        if(err){ cb(err,null); return; }
+         if(lookUpTable[key]!==undefined){
+             if(lookUpTable[key].length===1){ cb(null,doc[ lookUpTable[key][0] ]); }
+             else if(lookUpTable[key].length===2){ cb(null,doc[ lookUpTable[key][0] ][ lookUpTable[key][1] ]); }
+             else if(lookUpTable[key].length===3){ cb(null,doc[ lookUpTable[key][0] ][ lookUpTable[key][1] ][ lookUpTable[key][2] ]); }
+             else if(lookUpTable[key].length===4){ cb(null,doc[ lookUpTable[key][0] ][ lookUpTable[key][1] ][ lookUpTable[key][2] ][ lookUpTable[key][3] ]); }
+         }
+    });
+};
+//-------------------------
+
+//Action functions --------------
+exports.createAction=function(data,cb){
+    if(!data){ cb("Must provide data with name and ID",null); return; }
+    const newAction = new Action(data);
+    newAction.save((err,doc)=>{
+       if(err){  cb("Must provide data with name and ID",null); return; }
+       cb(null,"done");
+       return;
+    });
+};
+
+exports.getAction=function(id,cb){
+    lookUpAction(id,cb);
+};
+
+exports.addActionToPlayer=function(slackID,actionID,cb){
+    lookUpUser(slackID,(err,doc)=>{
+       if(err){ cb(err,null); return; }
+       doc.playerStats.actions.push(actionID);
+       doc.save((err,cb)=>{
+          if(err){ cb("Unable to save in addAction",null); return; }
+          cb(null,"done");
+          return;
+       });
+    });
+};
+
+//Object Functions --------------
+
+exports.createObject=function(data,cb){
+    if(!data){ cb("Must provide data with name and ID",null); return; }
+    const newObject = new Obj(data);
+    newObject.save((err,doc)=>{
+       if(err){  cb("Error saving new Object "+data.id,null); return; }
+       cb(null,"done");
+       return;
+    });
+};
+
+exports.getAction=function(id,cb){
+    lookUpObject(id,cb);
+};
+
+exports.addObjectToPlayer=function(slackID,objectID,cb){
+    lookUpUser(slackID,(err,doc)=>{
+       if(err){ cb(err,null); return; }
+       doc.playerStats.inventory.objs.push(objectID);
+       doc.save((err,cb)=>{
+          if(err){ cb("Unable to save in addObject",null); return; }
+          cb(null,"done");
+          return;
+       });
     });
 };
