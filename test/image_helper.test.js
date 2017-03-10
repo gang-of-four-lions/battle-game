@@ -5,7 +5,7 @@ var assert = require('chai').assert;
 //Percent should convert to coords starting with top left corner
 describe('convertPercentToCoords', function(done) {
   it('Should convert stated as a fraction to pixel values', function(done) {
-    var converted = convertPercentToCoords(__dirname + '/background.jpg', .25, .25);
+    var converted = convertPercentToCoords(__dirname + '/test_images/background.jpg', .25, .25);
     assert.deepEqual(converted, [125, 123.5]);
     done();
   });

@@ -5,7 +5,7 @@ var exports = module.exports = {};
 exports.combineImages = function (backgroundImage, imageOverlay, coordArray) {
     return images(backgroundImage)
          .draw(images(imageOverlay), coordArray[0], coordArray[1])
-         .encode("jpg", {operation: 50});
+         .encode("png", {operation: 50});
 };
 
 exports.makeScene = function (background, imageOne, imageTwo, coordArray, saveImageTo) {

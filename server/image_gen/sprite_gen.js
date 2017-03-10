@@ -9,12 +9,12 @@ var exports = module.exports = {};
     should be the layer of the image they should go on, starting at 0.
     {
         'front': {
-            'filename.jpg': 0,
-            'failname.jpg': 1
+            'filename.png': 0,
+            'failname.png': 1
         },
         'back': {
-            'filenamz.jpg': 0,
-            'fillname.jpg': 1
+            'filenamz.png': 0,
+            'fillname.png': 1
         }
     }
 */
@@ -22,9 +22,9 @@ exports.generateSprites = function (playerImagesObj, frontFacingSaveFile, backFa
     var front = sortImageObject(playerImagesObj['front']);
     var back = sortImageObject(playerImagesObj['back']);
     var frontSprite = makeSprite(front);
-    images(frontSprite).save(frontFacingSaveFile, {quality: 50});
+    images(frontSprite).save(frontFacingSaveFile);
     var backSprite = makeSprite(back);
-    images(backSprite).save(backFacingSaveFile, {quality: 50});
+    images(backSprite).save(backFacingSaveFile);
 };
 
 function sortImageObject (imageObject) {
@@ -36,9 +36,9 @@ function sortImageObject (imageObject) {
 
 
 function makeSprite (imageArray) {
-    var sprite = images(imageArray[0]);
+    var sprite = images(__dirname + '/' + imageArray[0]);
     for (var i = 1; i < imageArray.length; i++) {
-        sprite = combineImages(sprite, imageArray[i], [0,0]);
+        sprite = combineImages(sprite, (__dirname + '/' + imageArray[i], [0,0]));
     }
     return sprite;
 }
