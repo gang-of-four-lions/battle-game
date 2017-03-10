@@ -3,74 +3,32 @@ var images = require('images');
 
 var exports = module.exports = {};
 
-//FrontSprite should be used for opponent
-//the sprite-size key should point to the standard width x height of sprites
-    /*
-        the objects should look like this:
-        imageObj
-        {
-            sprite-size: [width, height],
-            sprite-front: filelocation,
-            ...
-            upper-front: filelocation
-        }
-        coodObj
-        {
-            sprite-front-loc: [x, y],
-            ..
-            upper-front-loc: [x, y]
-        }
-    
-    */
-exports.generateFrontSprite = function (imageObj, coordObj, frontSpriteSaveFile) {
-    const blank = imageObj['sprite-size'];
-    const sprite = imageObj['sprite-front'];
-    const head = imageObj['head-front'];
-    const weap = imageObj['weapon-front'];
-    const shoes = imageObj['shoes-front'];
-    const lower = imageObj['lower-front'];
-    const upper = imageObj['upper-front'];
-    var final;
-    if (!!weap) {
-        final = combineImages(blank, weap, coordObj['weapon-front-loc']);
-    }
-    final = combineImages(final, sprite, coordObj['sprite-front-loc']);
-    if (!!head) {
-        final = combineImages(final, head, coordObj['head-front-loc']);
-    }
-    if (!!shoes) {
-        final = combineImages(final, shoes, coordObj['shoes-front-loc']);
-    }
-    if (!!lower) {
-        final = combineImages(final, lower, coordObj['lower-front-loc']);
-    }
-    if (!!upper) {
-        final = combineImages(final, upper, coordObj['upper-front-loc']);
-    }
-    images(final).save(frontSpriteSaveFile, {quality: 50});
+/*
+    playerImagesObj should contain two objects, 'front' and 'back',
+    the filenames of the images as keys of the inner objects, and the values
+    should be the layer of the image they should go on, starting at 0.
+*/
+exports.generateSprites = function (playerImagesObj, frontFacingSaveFile, backFacingSaveFile) {
+    var front = sortImageObject(playerImagesObj['front']);
+    var back = sortImageObject(playerImagesObj['back']);
+    var frontSprite = makeSprite(front);
+    images(frontSprite).save(frontFacingSaveFile, {quality: 50});
+    var backSprite = makeSprite(back);
+    images(backSprite).save(backFacingSaveFile, {quality: 50});
 };
 
-//This one should be used for the player's view
-exports.generateBackSprite = function (imageObj, coordObj, backSpriteSaveFile) {
-    const blank = imageObj['sprite-size'];
-    const sprite = imageObj['sprite-back'];
-    const head = imageObj['head-back'];
-    const weap = imageObj['weapon-back'];
-    const lower = imageObj['lower-back'];
-    const upper = imageObj['upper-back'];
-    var final;
-    if (!!weap) {
-        final = combineImages(blank, weap, coordObj['weapon-back-loc']);
+function sortImageObject (imageObject) {
+    var imageArray = Object.keys(imageObject).sort(function (a,b) {
+        return imageObject[a]-imageObject[b];
+    });
+    return imageArray;
+}
+
+
+function makeSprite (imageArray) {
+    var sprite = images(imageArray[0]);
+    for (var i = 1; i < imageArray.length; i++) {
+        sprite = combineImages(sprite, imageArray[i], [0,0]);
     }
-    final = combineImages(final, sprite, coordObj['sprite-back-loc']);
-    if (!!lower) {
-        final = combineImages(final, lower, coordObj['lower-back-loc']);
-    }
-    if (!!upper) {
-        final = combineImages(final, upper, coordObj['upper-back-loc']);
-    }
-    if (!!head) {
-        final = combineImages(final, head, coordObj['head-back-loc']);
-    }
-    images(final).save(backSpriteSaveFile, {quality: 50});
-};
+    return sprite;
+}
