@@ -1,5 +1,7 @@
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+var CleanWebpackPlugin = require('clean-webpack-plugin'); // plugin to remove previously built files
+const path = require('path'); // required by CleanWebpackPlugin
+const HtmlWebpackPlugin = require('html-webpack-plugin'); // plugin to make HTML on the fly
 
 module.exports = {
   entry: {
@@ -10,6 +12,9 @@ module.exports = {
     filename: '[name].[chunkhash].js', // this is necessary to cache non-changed vendor files and update frequently changed App code
   },
   plugins: [
+    new CleanWebpackPlugin(['build'], { // remove previously built files
+      root: path.join(__dirname, '..')
+    }),
     new HtmlWebpackPlugin({ // this is necessary for making HTML on-the fly (because we don't have constant assets names now)
       title: 'Battle Game LP',
       filename: 'index.html',
