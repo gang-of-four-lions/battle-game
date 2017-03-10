@@ -182,8 +182,8 @@ exports.getStats = function(slackID,cb){
 exports.createAction=function(data,cb){
     if(!data){ cb("Must provide data with name and ID",null); return; }
     const newAction = new Action(data);
-    newAction.save((err,doc)=>{
-       if(err){  cb("Must provide data with name and ID",null); return; }
+    newAction.save((err)=>{
+       if(err){  cb("Error saving new action",null); return; }
        cb(null,"done");
        return;
     });
@@ -217,7 +217,7 @@ exports.createObject=function(data,cb){
     });
 };
 
-exports.getAction=function(id,cb){
+exports.getObject=function(id,cb){
     lookUpObject(id,cb);
 };
 
