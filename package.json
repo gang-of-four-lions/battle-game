@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build-prod": "webpack -p --config ./client/config/webpack.config.js",
-    "build-dev": "webpack --config ./client/config/webpack.config.js --watch",
+    "watch": "webpack --config ./client/config/webpack.config.js --watch",
     "test": "mocha",
     "start": "node index.js",
     "postinstall": "npm run build-prod"
