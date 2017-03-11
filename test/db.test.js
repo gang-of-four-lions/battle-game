@@ -89,6 +89,7 @@ describe('DB-Manager.getDisplay()', function() {
           });
       });
 });
+
 //getStats
 describe('DB-Manager.getStats()', function() {
       it('should find an entry on DB, and return object', (done) => {
@@ -99,8 +100,86 @@ describe('DB-Manager.getStats()', function() {
           });
       });
 });
+
+//addActionToPlayer
+describe('DB-Manager.addActionToPlayer()', function() {
+      it('should add a actionID to the user', (done) => {
+          manager.addActionToPlayer("Tester","act01", (err,doc)=>{
+             if(err){ done(err); }
+             else { done(); }
+          });
+      });
+      
+      it('should have saved the new updated user', (done) => {
+          manager.getUser("Tester", (err,doc)=>{
+             if(err){ done(); }
+             if( doc.playerStats.actions.length ){ done(); }
+             else { done("Did not save action."); }
+          });
+      });
+});
+//addObjectToPlayer
+describe('DB-Manager.addObjectToPlayer()', function() {
+      it('should add a ObjectID to the user', (done) => {
+          manager.addObjectToPlayer("Tester","obj01", (err,doc)=>{
+             if(err){ done(err); }
+             else { done(); }
+          });
+      });
+      
+      it('should have saved the new updated user', (done) => {
+          manager.getUser("Tester", (err,doc)=>{
+             if(err){ done(); }
+             if( doc.playerStats.inventory.objs.length ){ done(); }
+             else { done("Did not save obj."); }
+          });
+      });
+});
+
 //modUser
+describe('DB-Manager.modUser()', function() {
+    
+      it('should find and update entry on DB', (done) => {
+        manager.modUser("Tester",
+        {
+            "LVL":1,
+            "resWater":-5,
+            "coin":-25
+        }
+        ,(err)=>{
+           if(err){ done(err); return; } 
+           else { done(); }
+        }); 
+      });
+      
+      it('it should have saved the data to the DB', (done) => {
+         manager.getUser("Tester",(err,doc)=>{
+            if(err){ done(err,null); return; }
+            if(doc.playerStats.LVL!==11 || doc.playerStats.resistants.water!==15){ done("Did not Save",null); return; }
+            else { done(); }
+         });
+      });
+
+});
 //getStatsKey
+describe('DB-Manager.getStatsKey()', function() {
+    
+    it("should return a value",(done)=>{
+       manager.getStatsKey("Tester","LVL",(err,val)=>{
+           if(err){ done(err,null); return; }
+           else{  done();  }
+       });
+    });
+    
+    it("should error if invailid lookup key",(done)=>{
+       manager.getStatsKey("Tester","LeVeL",(err,val)=>{
+           if(err){ done(); return; }
+           else{  done("Did not error with invaild key",null);  }
+       });
+    });
+    
+});
+
 
 describe('DB-Manager.removeUser()', function() {
       it('should remove user from DB', (done) => {
@@ -159,7 +238,7 @@ describe('DB-Manager.getAction()', function() {
           });
       });
 });
-//addActionToPlayer
+
 //createObject
 describe('DB-Manager.createObject()', function() {
       it('should add a entry to the DB', (done) => {
@@ -199,4 +278,4 @@ describe('DB-Manager.getObject()', function() {
           });
       });
 });
-//addObjectToPlayer
+

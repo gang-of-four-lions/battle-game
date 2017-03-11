@@ -57,7 +57,7 @@ function lookUpUser(slackID,cb){
 function lookUpAction(id,cb){
     if(typeof(id)!=="string" || id===""){ cb("Invaild ID input, name must be a valid string.",null); return; }
     Action.find({ id:id },(err,doc)=>{
-        if(err || doc.length===0){ cb("Error finding "+id+" - "+err,null); return; }
+        if(err || doc.length===0){ cb("Error finding "+id,null); return; }
        cb(null,doc[0]);
        return;
     });
@@ -66,7 +66,7 @@ function lookUpAction(id,cb){
 function lookUpObject(id,cb){
     if(typeof(id)!=="string" || id===""){ cb("Invaild ID input, name must be a valid string.",null); return; }
     Obj.find({ id:id },(err,doc)=>{
-        if(err || doc.length===0){ cb("Error finding "+id+" - "+err,null); return; }
+        if(err || doc.length===0){ cb("Error finding "+id,null); return; }
        cb(null,doc[0]);
        return;
     });
@@ -84,7 +84,7 @@ exports.createUser=function(data,cb){
     if(!data){ cb("Must provide data with name and slackID",null); return; }
     const newUser = new User(data);
     newUser.save((err)=>{
-       if(err){  cb("Must provide data with name and slackID",null); return; }
+       if(err){  cb("Error saving user with ID: "+data.slackID,null); return; }
        cb(null,"done");
        return;
     });
@@ -140,7 +140,7 @@ exports.getStats = function(slackID,cb){
         }
         doc.save(err=>{
            if(err){ cb("Error saving doc",null); return; }
-           cb(null,"Updated");
+           cb(null,"done");
         });
     });
 };
@@ -159,7 +159,7 @@ exports.getStats = function(slackID,cb){
         }
         doc.save(err=>{
            if(err){ cb("Error saving doc",null); return; }
-           cb(null,"Updated");
+           cb(null,"done");
         });
     });
 };
@@ -174,6 +174,7 @@ exports.getStats = function(slackID,cb){
              else if(lookUpTable[key].length===3){ cb(null,doc[ lookUpTable[key][0] ][ lookUpTable[key][1] ][ lookUpTable[key][2] ]); }
              else if(lookUpTable[key].length===4){ cb(null,doc[ lookUpTable[key][0] ][ lookUpTable[key][1] ][ lookUpTable[key][2] ][ lookUpTable[key][3] ]); }
          }
+         else { cb("Invaild Key: "+key,null); return; }
     });
 };
 //-------------------------
@@ -197,7 +198,7 @@ exports.addActionToPlayer=function(slackID,actionID,cb){
     lookUpUser(slackID,(err,doc)=>{
        if(err){ cb(err,null); return; }
        doc.playerStats.actions.push(actionID);
-       doc.save((err,cb)=>{
+       doc.save((err)=>{
           if(err){ cb("Unable to save in addAction",null); return; }
           cb(null,"done");
           return;
@@ -225,7 +226,7 @@ exports.addObjectToPlayer=function(slackID,objectID,cb){
     lookUpUser(slackID,(err,doc)=>{
        if(err){ cb(err,null); return; }
        doc.playerStats.inventory.objs.push(objectID);
-       doc.save((err,cb)=>{
+       doc.save((err)=>{
           if(err){ cb("Unable to save in addObject",null); return; }
           cb(null,"done");
           return;
