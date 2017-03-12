@@ -36,9 +36,9 @@ function sortImageObject (imageObject) {
 
 
 function makeSprite (imageArray) {
-    var sprite = images(__dirname + '/' + imageArray[0]);
+    var sprite = images(__dirname + '/images/' + imageArray[0]);
     for (var i = 1; i < imageArray.length; i++) {
-        sprite = combineImages(sprite, (__dirname + '/' + imageArray[i], [0,0]));
+        sprite = combineImages(sprite, (__dirname + '/images/' + imageArray[i]), [0,0]);
     }
     return sprite;
 }
