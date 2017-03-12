@@ -1,4 +1,8 @@
 var makeScene = require('../server/image_gen/image_helper.js').makeScene;
+var convertPercentToCoords = require('../server/image_gen/image_helper.js').convertPercentToCoords;
 
+var playerPos = convertPercentToCoords(__dirname + '/test_images/background.jpg', .05, .50);
+var opponentPos = convertPercentToCoords(__dirname + '/test_images/background.jpg', .65, .05);
+var coords = [playerPos[0], playerPos[1], opponentPos[0], opponentPos[1]];
 //Uses makeScene function to overlay image on background
-makeScene(__dirname + '/test_images/background.jpg', __dirname + '/test_images/lionbot_558.png', __dirname + '/test_images/lionbot_558.png', [20,300, 300,300], 'test/test_images/testOut.png');
+makeScene(__dirname + '/test_images/background.jpg', __dirname + '/test_images/back.png', __dirname + '/test_images/front.png', coords, 'test/test_images/testOut.png');
