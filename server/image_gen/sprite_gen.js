@@ -5,16 +5,16 @@ var exports = module.exports = {};
 
 /*
     playerImagesObj should contain two objects, 'front' and 'back',
-    the filenames of the images as keys of the inner objects, and the values
+    the path and filenames of the images as keys of the inner objects, and the values
     should be the layer of the image they should go on, starting at 0.
     {
         'front': {
-            'filename.png': 0,
-            'failname.png': 1
+            'path/filename.png': 0,
+            'path/failname.png': 1
         },
         'back': {
-            'filenamz.png': 0,
-            'fillname.png': 1
+            'path/filenamz.png': 0,
+            'path/fillname.png': 1
         }
     }
 */
@@ -36,9 +36,9 @@ function sortImageObject (imageObject) {
 
 
 function makeSprite (imageArray) {
-    var sprite = images(__dirname + '/images/' + imageArray[0]);
+    var sprite = images(imageArray[0]);
     for (var i = 1; i < imageArray.length; i++) {
-        sprite = combineImages(sprite, (__dirname + '/images/' + imageArray[i]), [0,0]);
+        sprite = combineImages(sprite, (imageArray[i]), [0,0]);
     }
     return sprite;
 }

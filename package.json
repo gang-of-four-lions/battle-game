@@ -19,8 +19,8 @@
   "homepage": "https://github.com/gang-of-four-lions/battle-game#readme",
   "dependencies": {
     "body-parser": "^1.17.0",
+    "easyimage": "^2.1.0",
     "express": "^4.15.1",
-    "image-clipper": "^0.4.3",
     "images": "^3.0.0"
   },
   "devDependencies": {
