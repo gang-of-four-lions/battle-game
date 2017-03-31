@@ -1,7 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGOURI);
+mongoose.connect("mongodb://admin:slackdb$45@ds123050.mlab.com:23050/battle_bot"); //process.env.MONGOURI);
 
 var exports = module.exports = {};
 const User = require('./models/users.js');
@@ -77,6 +77,7 @@ function lookUpObject(id,cb){
 //User Functions -------------------
 
 exports.getUser=function(slackID,cb){
+    console.log("Looking up user: "+slackID);
     lookUpUser(slackID,cb);
 };
 
