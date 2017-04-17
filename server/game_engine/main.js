@@ -4,7 +4,7 @@ var exports = module.exports = {};
 const manager = require("../db_manager/manager.js");
 //manager.createUser({ name:"Josh5231", slackID:"Josh5231", playerStats:{ inventory:{ obj:["test1"] } } },(err)=>{ console.log("ERROR!"); return; });
 
-const LSD = { 
+const LSD = { //Local Server Data
 players: [ ], // { id:String, url:String, state:String, zone:Number } 
 games: [],
 getPlayerState: function(playerID){
@@ -31,6 +31,16 @@ getPlayerZone: function(playerID){
     const p=this.players.find((ply)=>{ return ply.id===playerID; });  
     return p.zone;
 },
+getGameIndex: function(gameID){
+    console.log("Looking for: "+gameID)
+    return this.games.findIndex((cv)=>{ console.log(cv.id); return cv.id===gameID; })
+},
+setPlayersGame: function(playerID,gameID){
+    const p=this.players.find((ply)=>{ return ply.id===playerID; });  
+    if(!p){ return "Error invaild playerID in setPlayersGame"; }
+    p.game = gameID;
+    return;    
+}
 };
 
 
@@ -102,6 +112,25 @@ const predefMessages = {
         }
     ]
 },
+    waiting:{
+        "text": "Welcome to the *Lion's Den*",
+        "attachments": [
+            {
+            "text": "Waiting for other players to join....",
+            "fallback": "Waiting",
+            "callback_id": "wopr_game",
+            "color": "#A0A0A0",
+            "attachment_type": "default",
+			"footer": "Vist us at  <http://www.lionsden.com|LionsDen.com>",
+            "actions": [
+                {
+                    "name": "Cancel",
+                    "text": "Cancel",
+                    "type": "button",
+                    "value": "Cancel"
+                }],
+            }]
+    }
 };
 
 const buildRoomMessage = function(zone){
@@ -181,6 +210,7 @@ exports.messageRouter = function(data,cb){
     {
       verifyPlayer(data,(err,res)=>{
           if(err){ cb(err,null); return; }
+          console.log(res);
           if(res==="help"){ addUser(data);  sendMessage(data.user_name, predefMessages.intro ,cb); return; }
           if(res==="done"){ sendMessage(data.user_name, predefMessages.intro ,cb); return; } //Send intro message
       }); 
@@ -194,9 +224,9 @@ exports.messageRouter = function(data,cb){
         case 'netGame': //Into message - Network game button
             sendMessage(buttonData.user.name, predefMessages.zones ,cb); //Send zone selection method
             return;
-        case 'singlePlayer':
+        //case 'singlePlayer':
             //Add code here to start single player mode...
-            return;
+           // return;
         case 'zone':
             //get zone name with buttonData.actions[0].name
             const zoneName = buttonData.actions[0].name;
@@ -209,6 +239,25 @@ exports.messageRouter = function(data,cb){
             const roomName = buttonData.actions[0].name;
             //get list of games in the room and build and then send
             sendMessage(buttonData.user.name,buildGamesMessage(LSD.getPlayerZone(buttonData.user.name),roomName),cb);
+            return;
+            
+        case 'game':
+            console.log(buttonData.actions[0].name);
+            addPlayerToGame(buttonData.user.name,buttonData.actions[0].name,(err,state)=>{
+                if(err){ cb(err,null); return; }
+                if(state==="waiting"){
+                    sendMessage(buttonData.user.name, predefMessages.waiting ,cb);
+                    return;
+                }
+                else if(state==="start"){
+                    startGame(buttonData.actions[0].name,cb);
+                    return;
+                }
+            });
+            return;
+            
+        default:
+            sendMessage(buttonData.user.name,{ text:"Error, this function has not be implemented!" },cb);
             return;
         }
   }
@@ -254,12 +303,29 @@ const sendMessage=function(playerID,msg,cb){
 
 const setupGame=function(opt){
     //opt = { type:String, background:URL }
+    let tp=0;
+    switch(opt.type){
+        case "1vrAI":
+            tp=1;
+            break;
+        case "1vr1":
+            tp=2;
+            break;
+         case "2vr2":
+            tp=4;
+            break;
+        case "3vr3":
+            tp=6;
+            break;
+    }
+    //console.log(opt.name);
     LSD.games.push({
-        id: "000", //TODO generate unquie ID
+        id: opt.name, //TODO generate unquie ID
         loc: { zone:opt.zone, room:opt.room, name:opt.name },
         state:"waiting", //Set init state to indicate it is waiting for players
         type:opt.type, // "1vrAI","1vr1","2vr2",ect..
         players:[], // Array of players in the game
+        playerCnt:tp,
         background:opt.background,
         updateCount: 0, 
         teamA:0,
@@ -268,7 +334,60 @@ const setupGame=function(opt){
     });
 };
 
-const addPlayerToGame=function(playerID,gameID){};
+const addPlayerToGame=function(playerID,gameID,cb){
+    const ind=LSD.getGameIndex(+gameID);
+    if(ind===-1){ cb("Error gameID not found",null); return; }
+    manager.getStats(playerID,(err,data)=>{
+        if(err){ cb(err,null); return; }
+        //console.log(LSD.games[ind].players);
+        LSD.games[ind].players.push(
+        {   id:playerID, playerStats:data   });
+        if(LSD.games[ind].players.length===LSD.games[ind].playerCnt){
+            LSD.games[ind].state="starting";
+            LSD.setPlayersGame(playerID,gameID);
+            cb(null,"start");
+        }
+        else{   cb(null,"waiting"); }
+    });
+    return;
+};
+
+const startGame=function(gameID,cb){
+    //Generate Action Message
+    //Generate Images
+    //send messages to all player
+    const teamAImage = "";
+    const teamBImage = "";
+    let baseMessage = {
+        "text": "Welcome to the *Lion's Den*",
+        "attachments": [
+            {
+            "text": "Select your action:",
+            "fallback": "Waiting",
+            "callback_id": "wopr_game",
+            "color": "#A0A0A0",
+            "attachment_type": "default",
+			"footer": "Vist us at  <http://www.lionsden.com|LionsDen.com>",
+            "actions": [],
+            }]
+    };
+    let game = LSD.games[LSD.getGameIndex(gameID)];
+    for(let i=0;i<game.players.length;i++)
+        {
+          //For now odd numbers = TeamA and even = TeamB
+          //Grab action list from playerStats
+          let actionIds = game.players[i].actions.slice(0); //Copy base actions list
+          game.players[i].inventory.objs.forEach((cv)=>{
+             manager.getObject(cv,(err,obj)=>{ //THIS WONT WORK due to sync loop + async calls
+                if(err){ cb(err,null); return; }
+                actionIds.push(obj.action);
+             }); 
+          });
+        }
+    
+    //start count down clock
+    //update game state
+};
 
 const updateGame=function(reqBody,cb){};
 
@@ -293,13 +412,13 @@ const addUser = function(reqBody){
 };
 
 const setupServer= function(){
-    for(let z=0;z<4;z++){
+    for(let z=1;z<5;z++){
         for(let r=0;r<4;r++){
          setupGame({
-             type:null,
+             type:"1vr1",
              zone:z, 
              room:r,
-             name:r,
+             name:(z*10)+r,
              background:null
          });
         }
